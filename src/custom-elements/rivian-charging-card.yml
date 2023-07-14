@@ -2,7 +2,7 @@ type: vertical-stack
 cards:
   - type: conditional
     conditions:
-      - entity: binary_sensor.r1t_charger_connection
+      - entity: binary_sensor.maeve_charger_connection
         state: "on"
     card:
       type: picture-elements
@@ -17,72 +17,72 @@ cards:
             }
       elements:
         - type: state-icon
-          entity: sensor.r1t_soc_limit
+          entity: sensor.maeve_soc_limit
           state_color: true
           style:
             top: 9%
             left: 16%
         - type: state-label
-          entity: sensor.r1t_soc_limit
+          entity: sensor.maeve_soc_limit
           suffix: " limit"
           style:
             top: 18%
             left: 16%
         - type: state-icon
-          entity: sensor.r1t_charging_time_elapsed
+          entity: sensor.maeve_charging_time_elapsed
           icon: mdi:clock-start
           state_color: true
           style:
             top: 9%
             left: 38%
         - type: state-label
-          entity: sensor.r1t_charging_time_elapsed
+          entity: sensor.maeve_charging_time_elapsed
           suffix: " ago"
           style:
             top: 18%
             left: 38%
         - type: state-icon
-          entity: sensor.r1t_charging_time_remaining
+          entity: sensor.maeve_charging_time_remaining
           icon: mdi:clock-end
           state_color: true
           style:
             top: 9%
             left: 62%
         - type: state-label
-          entity: sensor.r1t_charging_time_remaining
+          entity: sensor.maeve_charging_time_remaining
           suffix: " left"
           style:
             top: 18%
             left: 62%
         - type: state-icon
-          entity: sensor.r1t_charging_cost
+          entity: sensor.maeve_charging_cost
           state_color: true
           style:
             top: 9%
             left: 84%
         - type: state-label
-          entity: sensor.r1t_charging_cost
+          entity: sensor.maeve_charging_cost
           style:
             top: 18%
             left: 84%
         - type: conditional
           conditions:
-            - entity: binary_sensor.r1t_charging_status
+            - entity: binary_sensor.maeve_charging_status
               state: "off"
           elements:
             - type: state-icon
-              entity: sensor.r1t_battery_state_of_charge
+              entity: sensor.maeve_battery_state_of_charge
               state_color: true
               style:
                 top: 84%
                 left: 10%
         - type: conditional
           conditions:
-            - entity: binary_sensor.r1t_charging_status
+            - entity: binary_sensor.maeve_charging_status
               state: "on"
           elements:
             - type: state-icon
-              entity: sensor.r1t_battery_state_of_charge
+              entity: sensor.maeve_battery_state_of_charge
               icon: mdi:battery-charging
               style:
                 top: 84%
@@ -116,57 +116,57 @@ cards:
                   }
                 }
         - type: state-label
-          entity: sensor.r1t_battery_state_of_charge
+          entity: sensor.maeve_battery_state_of_charge
           style:
             top: 93%
             left: 10%
         - type: state-icon
-          entity: sensor.r1t_charging_speed
+          entity: sensor.maeve_charging_speed
           state_color: true
           style:
             top: 84%
             left: 30%
         - type: state-label
-          entity: sensor.r1t_charging_speed
+          entity: sensor.maeve_charging_speed
           style:
             top: 93%
             left: 30%
         - type: state-icon
-          entity: sensor.r1t_charging_rate
+          entity: sensor.maeve_charging_rate
           state_color: true
           style:
             top: 84%
             left: 50%
         - type: state-label
-          entity: sensor.r1t_charging_rate
+          entity: sensor.maeve_charging_rate
           style:
             top: 93%
             left: 50%
         - type: state-icon
-          entity: sensor.r1t_charging_energy_delivered
+          entity: sensor.maeve_charging_energy_delivered
           state_color: true
           style:
             top: 84%
             left: 70%
         - type: state-label
-          entity: sensor.r1t_charging_energy_delivered
+          entity: sensor.maeve_charging_energy_delivered
           style:
             top: 93%
             left: 70%
         - type: state-icon
-          entity: sensor.r1t_charging_range_added
+          entity: sensor.maeve_charging_range_added
           state_color: true
           style:
             top: 84%
             left: 90%
         - type: state-label
-          entity: sensor.r1t_charging_range_added
+          entity: sensor.maeve_charging_range_added
           style:
             top: 93%
             left: 90%
   - type: conditional
     conditions:
-      - entity: binary_sensor.r1t_charger_connection
+      - entity: binary_sensor.maeve_charger_connection
         state_not: "on"
     card:
       type: picture-elements
@@ -181,100 +181,100 @@ cards:
             }
       elements:
         - type: state-icon
-          entity: device_tracker.r1t_location
+          entity: device_tracker.maeve_location
           state_color: true
           style:
             top: 9%
             left: 16%
         - type: state-label
-          entity: device_tracker.r1t_location
+          entity: device_tracker.maeve_location
           style:
             top: 18%
             left: 16%
         - type: state-icon
-          entity: binary_sensor.r1t_locked_state
+          entity: binary_sensor.maeve_locked_state
           state_color: true
           style:
             top: 9%
             left: 38%
         - type: state-label
-          entity: binary_sensor.r1t_locked_state
+          entity: binary_sensor.maeve_locked_state
           style:
             top: 18%
             left: 38%
         - type: state-icon
-          entity: binary_sensor.r1t_closure_state
+          entity: binary_sensor.maeve_closure_state
           state_color: true
           style:
             top: 9%
             left: 62%
         - type: state-label
-          entity: binary_sensor.r1t_closure_state
+          entity: binary_sensor.maeve_closure_state
           style:
             top: 18%
             left: 62%
         - type: state-icon
-          entity: sensor.r1t_power_state
+          entity: sensor.maeve_power_state
           state_color: true
           style:
             top: 9%
             left: 84%
         - type: state-label
-          entity: sensor.r1t_power_state
+          entity: sensor.maeve_power_state
           style:
             top: 18%
             left: 84%
         - type: state-icon
-          entity: sensor.r1t_battery_state_of_charge
+          entity: sensor.maeve_battery_state_of_charge
           style:
             top: 84%
             left: 10%
         - type: state-label
-          entity: sensor.r1t_battery_state_of_charge
+          entity: sensor.maeve_battery_state_of_charge
           style:
             top: 93%
             left: 10%
         - type: state-icon
-          entity: sensor.r1t_gear_selector
+          entity: sensor.maeve_gear_selector
           state_color: true
           style:
             top: 84%
             left: 30%
         - type: state-label
-          entity: sensor.r1t_gear_selector
+          entity: sensor.maeve_gear_selector
           style:
             top: 93%
             left: 30%
         - type: state-icon
-          entity: sensor.r1t_drive_mode
+          entity: sensor.maeve_drive_mode
           state_color: true
           style:
             top: 84%
             left: 50%
         - type: state-label
-          entity: sensor.r1t_drive_mode
+          entity: sensor.maeve_drive_mode
           style:
             top: 93%
             left: 50%
         - type: state-icon
-          entity: binary_sensor.r1t_in_use_state
+          entity: binary_sensor.maeve_in_use_state
           state_color: true
           style:
             top: 84%
             left: 70%
         - type: state-label
-          entity: binary_sensor.r1t_in_use_state
+          entity: binary_sensor.maeve_in_use_state
           style:
             top: 93%
             left: 70%
         - type: state-icon
-          entity: sensor.r1t_estimated_vehicle_range
+          entity: sensor.maeve_estimated_vehicle_range
           state_color: true
           style:
             top: 84%
             left: 90%
         - type: state-label
-          entity: sensor.r1t_estimated_vehicle_range
+          entity: sensor.maeve_estimated_vehicle_range
           style:
             top: 93%
             left: 90%
