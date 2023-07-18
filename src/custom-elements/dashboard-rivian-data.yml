@@ -1,0 +1,435 @@
+title: Rivian - Data Dashboards
+views:
+  - theme: Backend-selected
+    title: Rivian R1T
+    path: rivian-r1t
+    icon: mdi:car-lifted-pickup
+    badges: []
+    cards:
+      - type: gauge
+        entity: sensor.maeve_battery_state_of_charge
+        unit: '%'
+        min: 1
+        max: 100
+        needle: false
+        severity:
+          green: 45
+          yellow: 20
+          red: 1
+      - show_name: true
+        show_icon: true
+        show_state: true
+        type: glance
+        entities:
+          - entity: sensor.maeve_cabin_temperature
+          - entity: sensor.maeve_driver_temperature
+          - entity: sensor.maeve_pet_mode_temperature_status
+          - entity: weather.forecast_home
+        state_color: true
+      - type: entities
+        entities:
+          - entity: binary_sensor.maeve_charger_connection
+          - entity: sensor.maeve_estimated_vehicle_range
+          - entity: sensor.maeve_gear_selector
+          - entity: sensor.maeve_odometer
+          - entity: device_tracker.maeve_location
+      - type: weather-forecast
+        entity: weather.forecast_home
+      - type: map
+        entities:
+          - entity: device_tracker.maeve_location
+        dark_mode: true
+        hours_to_show: 24
+      - type: history-graph
+        entities:
+          - entity: sensor.maeve_drive_mode
+          - entity: sensor.maeve_gear_selector
+          - entity: binary_sensor.maeve_locked_state
+          - entity: binary_sensor.maeve_gear_guard
+      - type: history-graph
+        entities:
+          - entity: sensor.maeve_power_state
+          - entity: sensor.maeve_battery_state_of_charge
+          - entity: binary_sensor.maeve_charger_connection
+          - entity: binary_sensor.maeve_cabin_climate_preconditioning
+          - entity: sensor.maeve_battery_thermal_runaway_propagation
+          - entity: sensor.maeve_battery_thermal_status
+      - type: history-graph
+        entities:
+          - entity: sensor.maeve_cabin_temperature
+          - entity: sensor.maeve_driver_temperature
+      - type: history-graph
+        entities:
+          - entity: sensor.maeve_odometer
+  - theme: Backend-selected
+    title: OTA
+    path: ota
+    icon: mdi:cloud-download
+    badges: []
+    cards:
+      - type: entities
+        entities:
+          - update.maeve_software
+      - type: history-graph
+        entities:
+          - entity: sensor.maeve_software_ota_status_current
+      - type: markdown
+        content: >-
+          {% for device_id in
+          integration_entities('rivian')|map('device_id')|unique if
+          device_attr(device_id,'model') is match('.*\sR1(T|S)$') -%}
+            {% set status_entity_id = device_entities(device_id)|select("match", "^sensor.*_software_ota_status$")|first %}
+            {% set update_entity_id = device_entities(device_id)|select("match", "^update.*$")|first %}
+            {% set device_name = [device_attr(device_id,'name_by_user'), device_attr(device_id,'name')]| unique| select("ne", None)| first%}
+            # OTA Updates Info - {{ device_name }}
+            {% if is_state(status_entity_id, 'Downloading') -%}
+              <p><font color="#c3e88d">
+              <ha-icon icon="mdi:cloud-download"></ha-icon> Download Available <ha-icon icon="mdi:cloud-download"></ha-icon>
+              </font></p>
+            {%- endif %}
+            {%- if is_state(status_entity_id, 'Preparing') -%}
+              <p><font color="#ff9800">
+              <ha-icon icon="mdi:cog"></ha-icon> Preparing for Install <ha-icon icon="mdi:cog"></ha-icon>
+              </font></p>
+            {%- endif %}
+            {%- if is_state(status_entity_id, 'Ready_To_Install') -%}
+              <p><font color="#03a9f4">
+              <ha-icon icon="mdi:party-popper"></ha-icon> Installation Ready <ha-icon icon="mdi:party-popper"></ha-icon>
+              </font></p>
+            {%- endif %}
+            {%- if is_state(status_entity_id, ['Installing','Awaiting_Install']) -%}
+              <p><font color="#03a9f4">
+              <ha-icon icon="mdi:cog-clockwise"></ha-icon> Installing {{ state_attr(update_entity_id, 'in_progress') }}%
+              </font></p>
+            {%- endif %}
+            
+            ## Current Version: {{ state_attr(update_entity_id,'installed_version') }}
+            ## Available Version: {{ state_attr(update_entity_id,'latest_version') }}
+            {%- if not loop.last %}
+            ----
+            {% endif -%}
+          {%- endfor %}
+      - type: custom:auto-entities
+        filter:
+          include:
+            - entity_id: sensor.maeve_software_ota_download_progress
+          exclude: []
+        card:
+          type: entities
+      - type: custom:auto-entities
+        filter:
+          include:
+            - entity_id: sensor.maeve_software_ota_download_progress
+          exclude: []
+        card:
+          type: entities
+      - type: history-graph
+        entities:
+          - entity: sensor.maeve_software_ota_status
+          - entity: sensor.maeve_software_ota_install_duration
+          - entity: sensor.maeve_software_ota_install_time
+          - entity: sensor.maeve_software_ota_install_type
+      - type: history-graph
+        entities:
+          - entity: sensor.rivian_telematics_ota_status_pending_reason_active_mode
+          - entity: sensor.rivian_telematics_ota_status_pending_reason_lv_batt
+          - entity: sensor.rivian_telematics_ota_status_pending_reason_other
+          - entity: sensor.rivian_telematics_ota_status_available_version
+          - entity: sensor.rivian_telematics_ota_status_status
+          - entity: sensor.maeve_power_state
+      - type: entities
+        entities:
+          - entity: sensor.maeve_software_ota_status
+          - entity: sensor.maeve_software_ota_status_current
+  - theme: Backend-selected
+    icon: mdi:map-clock
+    title: Location History
+    path: location-history
+    badges: []
+    cards:
+      - type: custom:auto-entities
+        filter:
+          include:
+            - domain: device_tracker
+              integration: rivian
+          exclude: []
+        card:
+          type: map
+          hours_to_show: 7
+          title: Rivian Location (<24h)
+      - type: custom:auto-entities
+        filter:
+          include:
+            - domain: device_tracker
+              integration: rivian
+          exclude: []
+        card:
+          type: map
+          hours_to_show: 178
+          title: Rivian Location (<7d)
+          default_zoom: 12
+      - type: custom:auto-entities
+        filter:
+          include:
+            - domain: device_tracker
+              integration: rivian
+          exclude: []
+        card:
+          type: map
+          hours_to_show: 720
+          title: Rivian Location (<30d)
+          default_zoom: 10
+  - theme: Backend-selected
+    title: R1T - Vehicle State
+    path: r1t-state
+    icon: mdi:car-lifted-pickup
+    badges: []
+    cards:
+      - type: gauge
+        entity: sensor.maeve_estimated_vehicle_range
+        name: Estimated Range
+        unit: mi
+        min: 1
+        max: 350
+        needle: true
+        severity:
+          green: 120
+          yellow: 40
+          red: 1
+      - type: gauge
+        entity: sensor.maeve_battery_state_of_charge
+        name: State of Charge
+        unit: '%'
+        min: 1
+        max: 100
+        needle: false
+        severity:
+          green: 45
+          yellow: 20
+          red: 1
+      - type: entity
+        entity: sensor.maeve_odometer
+        state_color: false
+      - square: true
+        columns: 3
+        type: grid
+        cards:
+          - type: entity
+            entity: sensor.maeve_tire_pressure_front_left
+            name: Front Left
+            icon: mdi:car-tire-alert
+            state_color: true
+          - type: entities
+            entities:
+              - entity: binary_sensor.maeve_front_trunk
+              - entity: binary_sensor.maeve_front_trunk_lock
+            state_color: true
+          - type: entity
+            entity: sensor.maeve_tire_pressure_front_right
+            icon: mdi:car-tire-alert
+            name: Front Right
+            state_color: true
+          - type: entities
+            entities:
+              - entity: binary_sensor.maeve_door_front_left_lock
+              - entity: binary_sensor.maeve_door_front_left
+              - entity: binary_sensor.maeve_window_front_left
+            show_header_toggle: true
+            state_color: true
+          - type: markdown
+            content: '&nbsp;'
+          - type: entities
+            entities:
+              - entity: binary_sensor.maeve_door_front_right_lock
+              - entity: binary_sensor.maeve_door_front_right
+              - entity: binary_sensor.maeve_window_front_right
+            state_color: true
+          - type: entities
+            entities:
+              - entity: binary_sensor.maeve_door_rear_left_lock
+              - entity: binary_sensor.maeve_door_rear_left
+              - entity: binary_sensor.maeve_window_rear_left
+            state_color: true
+          - type: markdown
+            content: '&nbsp;'
+          - type: entities
+            entities:
+              - entity: binary_sensor.maeve_door_rear_right_lock
+              - entity: binary_sensor.maeve_door_rear_right
+              - entity: binary_sensor.maeve_window_rear_right
+            state_color: true
+          - type: entities
+            entities:
+              - entity: binary_sensor.maeve_gear_tunnel_left_lock
+              - entity: binary_sensor.maeve_gear_tunnel_left
+            state_color: true
+          - type: markdown
+            content: '&nbsp;'
+          - type: entities
+            entities:
+              - entity: binary_sensor.maeve_gear_tunnel_right_lock
+              - entity: binary_sensor.maeve_gear_tunnel_right
+            state_color: true
+          - type: entity
+            entity: sensor.maeve_tire_pressure_rear_left
+            icon: mdi:car-tire-alert
+            name: Rear Left
+            state_color: true
+          - type: entities
+            entities:
+              - entity: binary_sensor.maeve_tonneau_lock
+              - entity: binary_sensor.maeve_tonneau
+            state_color: true
+          - type: entity
+            entity: sensor.maeve_tire_pressure_rear_right
+            icon: mdi:car-tire-alert
+            name: Rear Right
+            state_color: true
+          - type: markdown
+            content: '&nbsp;'
+          - type: entities
+            entities:
+              - entity: binary_sensor.maeve_tailgate
+              - entity: binary_sensor.maeve_tailgate_lock
+            state_color: true
+          - type: markdown
+            content: '&nbsp;'
+  - theme: Backend-selected
+    title: History
+    path: history
+    icon: mdi:clipboard-text-clock
+    badges: []
+    cards:
+      - type: custom:auto-entities
+        card:
+          type: logbook
+          hours_to_show: 24
+        filter:
+          include:
+            - name: '*Mæve*'
+  - theme: Backend-selected
+    path: climate-controls
+    icon: mdi:snowflake-thermometer
+    badges: []
+    cards:
+      - type: custom:auto-entities
+        card:
+          type: entities
+        filter:
+          include:
+            - entity_id: '*heated_seat*'
+          exclude: []
+      - type: custom:auto-entities
+        filter:
+          include:
+            - entity_id: '*heated_seat*'
+          exclude: []
+        card:
+          type: history-graph
+      - type: custom:auto-entities
+        card:
+          type: entities
+        filter:
+          include:
+            - entity_id: '*vented_seat*'
+          exclude: []
+      - type: custom:auto-entities
+        card:
+          type: entities
+        filter:
+          include:
+            - entity_id: binary_sensor.maeve_defrost_defog
+          exclude: []
+      - type: custom:auto-entities
+        filter:
+          include:
+            - entity_id: '*driver_temperature'
+            - entity_id: '*cabin_temperature'
+          exclude: []
+        card:
+          type: history-graph
+      - type: custom:auto-entities
+        filter:
+          include:
+            - entity_id: binary_sensor.maeve_heated_steering_wheel
+            - entity_id: binary_sensor.maeve_defrost_defog
+          exclude: []
+        card:
+          type: history-graph
+      - type: custom:auto-entities
+        filter:
+          include:
+            - entity_id: '*vented_seat*'
+          exclude: []
+        card:
+          type: history-graph
+  - title: Advanced Logbook
+    path: advanced-logbook
+    icon: mdi:math-log
+    badges: []
+    cards:
+      - type: logbook
+        entities:
+          - binary_sensor.maeve_closure_state
+          - binary_sensor.maeve_locked_state
+          - binary_sensor.maeve_gear_guard
+          - binary_sensor.maeve_gear_guard_alarm
+          - binary_sensor.maeve_door_front_left
+          - binary_sensor.maeve_window_front_left
+          - sensor.maeve_window_calibration_front_left_state
+          - binary_sensor.maeve_door_front_left_lock
+          - binary_sensor.maeve_door_front_right
+          - binary_sensor.maeve_window_front_right
+          - sensor.maeve_window_calibration_front_right_state
+          - binary_sensor.maeve_door_front_right_lock
+          - binary_sensor.maeve_door_rear_left
+          - binary_sensor.maeve_window_rear_left
+          - sensor.maeve_window_calibration_rear_left_state
+          - binary_sensor.maeve_door_rear_left_lock
+          - binary_sensor.maeve_door_rear_right
+          - binary_sensor.maeve_window_rear_right
+          - sensor.maeve_window_calibration_rear_right_state
+          - binary_sensor.maeve_door_rear_right_lock
+          - binary_sensor.maeve_front_trunk
+          - binary_sensor.maeve_front_trunk_lock
+          - binary_sensor.maeve_tonneau
+          - binary_sensor.maeve_tonneau_lock
+          - binary_sensor.maeve_tailgate
+          - binary_sensor.maeve_tailgate_lock
+          - binary_sensor.maeve_gear_tunnel_left
+          - binary_sensor.maeve_gear_tunnel_left_lock
+          - binary_sensor.maeve_gear_tunnel_right
+          - binary_sensor.maeve_gear_tunnel_right_lock
+          - binary_sensor.maeve_wiper_fluid_level
+          - binary_sensor.maeve_tire_pressure_front_left_validity
+          - binary_sensor.maeve_tire_pressure_front_right_validity
+          - binary_sensor.maeve_tire_pressure_rear_left_validity
+          - binary_sensor.maeve_tire_pressure_rear_right_validity
+          - sensor.maeve_tire_pressure_front_left
+          - sensor.maeve_tire_pressure_front_right
+          - sensor.maeve_tire_pressure_rear_left
+          - sensor.maeve_tire_pressure_rear_right
+          - sensor.maeve_cabin_temperature
+          - binary_sensor.maeve_pet_mode
+          - binary_sensor.maeve_cabin_climate_preconditioning
+          - binary_sensor.maeve_defrost_defog
+          - binary_sensor.maeve_heated_seat_front_left
+          - binary_sensor.maeve_heated_seat_front_right
+          - binary_sensor.maeve_heated_seat_rear_left
+          - binary_sensor.maeve_heated_seat_rear_right
+          - binary_sensor.maeve_heated_steering_wheel
+          - binary_sensor.maeve_vented_seat_front_left
+          - binary_sensor.maeve_vented_seat_front_right
+          - device_tracker.maeve_location
+          - sensor.maeve_odometer
+          - sensor.maeve_drive_mode
+          - sensor.maeve_estimated_vehicle_range
+          - binary_sensor.maeve_charging_status
+          - binary_sensor.maeve_charger_connection
+          - sensor.maeve_battery_state_of_charge
+          - sensor.maeve_battery_thermal_status
+          - sensor.maeve_battery_thermal_runaway_propagation
+          - sensor.maeve_charging_rate
+          - sensor.maeve_charging_speed
+          - sensor.maeve_charger_derate_status
+        title: Advanced Logbook
